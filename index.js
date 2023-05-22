@@ -59,12 +59,14 @@ async function run() {
             $set: {
                 name: updatedToys.name, 
                 quantity: updatedToys.quantity, 
-                supplier: updatedToys.supplier, 
-                taste: updatedToys.taste, 
-                category: updatedToys.category, 
+                seller: updatedToys.seller, 
+                rating: updatedToys.rating, 
+                sub_category: updatedToys.sub_category, 
                 details: updatedToys.details, 
-                photo: updatedToys.photo
-            }
+                photo: updatedToys.photo,
+                email: updatedToys.email,
+                price: updatedToys.price,
+              }
         }
 
         const result = await toysCollection.updateOne(filter, toys, options);
@@ -83,7 +85,7 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
