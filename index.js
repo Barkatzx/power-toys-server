@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const { ObjectId } = require('mongodb');
+
 const app = express();
 const port = process.env.PORT || 5000
 
@@ -49,29 +51,40 @@ async function run() {
         res.send(result);
     })
 
-    app.put('/toys/:id', async(req, res) => {
+    app.put('/toys/:id', async (req, res) => {
+      try {
         const id = req.params.id;
-        const filter = {_id: new ObjectId(id)}
+        const filter = { _id: new ObjectId(id) };
         const options = { upsert: true };
         const updatedToys = req.body;
-
+    
         const toys = {
-            $set: {
-                name: updatedToys.name, 
-                quantity: updatedToys.quantity, 
-                seller: updatedToys.seller, 
-                rating: updatedToys.rating, 
-                sub_category: updatedToys.sub_category, 
-                details: updatedToys.details, 
-                photo: updatedToys.photo,
-                email: updatedToys.email,
-                price: updatedToys.price,
-              }
-        }
-
+          $set: {
+            name: updatedToys.name,
+            quantity: updatedToys.quantity,
+            seller: updatedToys.seller,
+            rating: updatedToys.rating,
+            sub_category: updatedToys.sub_category,
+            details: updatedToys.details,
+            photo: updatedToys.photo,
+            email: updatedToys.email,
+            price: updatedToys.price,
+          },
+        };
+    
         const result = await toysCollection.updateOne(filter, toys, options);
-        res.send(result);
-    })
+    
+        if (result.matchedCount > 0) {
+          res.json({ message: 'Toys updated successfully' });
+        } else {
+          res.status(404).json({ error: 'Toys not found' });
+        }
+      } catch (error) {
+        res.status(500).json({ error: 'An error occurred while updating toys' });
+      }
+    });
+    
+    
 
     app.delete('/toys/:id', async (req, res) => {
         const id = req.params.id;
